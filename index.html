@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Paid Membership Manager</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div class="app-shell">
+    <aside class="sidebar" id="sidebar">
+      <div class="brand"><span class="brand-mark">✦</span><div><strong>Paid</strong><small>Membership Manager</small></div></div>
+      <nav class="nav" aria-label="Main navigation">
+        <button class="nav-link active" data-page="dashboard"><span>⌂</span> Dashboard</button>
+        <button class="nav-link" data-page="members"><span>♙</span> Members</button>
+        <button class="nav-link" data-page="daily-report"><span>◷</span> Daily report</button>
+        <button class="nav-link" data-page="monthly-report"><span>▦</span> Monthly report</button>
+      </nav>
+      <div class="sidebar-bottom">
+        <button class="nav-link" id="backupBtn"><span>⇩</span> Backup data</button>
+        <label class="nav-link upload-label"><span>⇧</span> Restore data<input type="file" id="restoreInput" accept="application/json" hidden /></label>
+        <button class="theme-toggle" id="themeToggle"><span id="themeIcon">◐</span> <span id="themeText">Dark appearance</span></button>
+      </div>
+    </aside>
+    <main class="main-content">
+      <header class="topbar">
+        <button class="mobile-menu" id="mobileMenu" aria-label="Open menu">☰</button>
+        <div><p class="eyebrow" id="greeting">Good day</p><h1 id="pageTitle">Dashboard</h1></div>
+        <div class="top-actions"><span class="date-label" id="todayDate"></span><button class="primary-btn" id="addMemberBtn">＋ Add member</button></div>
+      </header>
+
+      <section class="page active" id="dashboard">
+        <div class="stat-grid" id="revenueStats"></div>
+        <section class="panel chart-panel wide"><div class="panel-heading"><div><p class="eyebrow">Performance</p><h2>Revenue trend</h2></div><span class="chip">Last 7 days</span></div><div class="chart-wrap"><canvas id="revenueChart"></canvas></div></section>
+        <div class="dashboard-grid">
+          <section class="panel"><div class="panel-heading"><div><p class="eyebrow">Memberships</p><h2>Member overview</h2></div></div><div class="mini-stats" id="membershipStats"></div></section>
+          <section class="panel"><div class="panel-heading"><div><p class="eyebrow">Attention</p><h2>Expiring soon</h2><span class="chip accent">Next 7 days</span></div><div class="expiry-list" id="expiringList"></div></section>
+        </div>
+        <div class="dashboard-grid charts-row">
+          <section class="panel"><div class="panel-heading"><h2>Products</h2></div><div class="small-chart"><canvas id="productChart"></canvas></div></section>
+          <section class="panel"><div class="panel-heading"><h2>Payments</h2></div><div class="small-chart"><canvas id="paymentChart"></canvas></div></section>
+          <section class="panel"><div class="panel-heading"><h2>Plan distribution</h2></div><div class="plan-list" id="planStats"></div></section>
+        </div>
+        <div class="dashboard-grid"><section class="panel"><div class="panel-heading"><h2>Product performance</h2></div><div id="productStats" class="detail-list"></div></section><section class="panel"><div class="panel-heading"><h2>Payment revenue</h2></div><div id="paymentStats" class="detail-list"></div></section></div>
+      </section>
+
+      <section class="page" id="members">
+        <section class="panel table-panel"><div class="panel-heading responsive-heading"><div><p class="eyebrow">Directory</p><h2>All members</h2></div><button class="secondary-btn" id="exportMembersBtn">⇩ Export CSV</button></div>
+          <div class="table-tools"><label class="search-box">⌕ <input id="memberSearch" placeholder="Search username" /></label><select id="productFilter"><option value="">All products</option><option>Doujinshi Paid</option><option>Manhwa Paid</option></select><select id="statusFilter"><option value="">All statuses</option><option>Active</option><option>Expired</option><option>Lifetime</option></select><select id="sortMembers"><option value="newest">Newest first</option><option value="oldest">Oldest first</option><option value="name">Username A–Z</option></select></div>
+          <div class="table-scroll"><table><thead><tr><th>Username</th><th>Product</th><th>Plan</th><th>Price</th><th>Payment</th><th>Start date</th><th>Expire date</th><th>Status</th><th>Notes</th><th></th></tr></thead><tbody id="membersTable"></tbody></table></div>
+        </section>
+      </section>
+
+      <section class="page" id="daily-report"><div class="report-header"><div><p class="eyebrow">Today at a glance</p><h2>Daily report</h2><p id="dailyReportDate"></p></div><button class="secondary-btn report-export" data-report="daily">⇩ Export report</button></div><div class="stat-grid" id="dailyReportStats"></div><div class="dashboard-grid"><section class="panel"><div class="panel-heading"><h2>Product breakdown</h2></div><div class="detail-list" id="dailyProducts"></div></section><section class="panel"><div class="panel-heading"><h2>Payment breakdown</h2></div><div class="detail-list" id="dailyPayments"></div></section></div></section>
+      <section class="page" id="monthly-report"><div class="report-header"><div><p class="eyebrow">This month</p><h2>Monthly report</h2><p id="monthlyReportDate"></p></div><button class="secondary-btn report-export" data-report="monthly">⇩ Export report</button></div><div class="stat-grid" id="monthlyReportStats"></div><div class="dashboard-grid"><section class="panel"><div class="panel-heading"><h2>Product statistics</h2></div><div class="detail-list" id="monthlyProducts"></div></section><section class="panel"><div class="panel-heading"><h2>Payment statistics</h2></div><div class="detail-list" id="monthlyPayments"></div></section></div></section>
+    </main>
+  </div>
+
+  <div class="modal-backdrop" id="memberModal" aria-hidden="true"><div class="modal glass"><button class="close-modal" id="closeModal">×</button><div><p class="eyebrow" id="modalEyebrow">New subscription</p><h2 id="modalTitle">Add member</h2></div><form id="memberForm"><input type="hidden" id="memberId" /><div class="form-grid"><label>Username<input id="username" required placeholder="e.g. Aung Aung" /></label><label>Product<select id="product" required><option value="Doujinshi Paid">Doujinshi Paid</option><option value="Manhwa Paid">Manhwa Paid</option></select></label><label>Plan<select id="plan" required></select></label><label>Payment method<select id="payment" required><option>KPay</option><option>Wave Pay</option><option>Aya Pay</option></select></label><label>Start date<input type="date" id="startDate" required /></label><label>Price (Ks)<input id="price" readonly /></label><label>Expire date<input id="expireDate" readonly /></label><label class="full-width">Notes<textarea id="notes" rows="3" placeholder="Optional member notes"></textarea></label></div><div class="modal-actions"><button type="button" class="secondary-btn" id="cancelModal">Cancel</button><button class="primary-btn" type="submit">Save member</button></div></form></div></div>
+  <div id="toast" class="toast"></div>
+  <script src="script.js"></script>
+</body>
+</html>
